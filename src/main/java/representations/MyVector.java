@@ -1,8 +1,11 @@
 package representations;
 
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class MyVector {
+public class MyVector implements Iterable<Double>, Comparable<MyVector> {
 
 	/*
 	 * Fundamental object in linear algebra
@@ -15,9 +18,14 @@ public class MyVector {
 	private final int size;
 	private final double[] contents;
 
+	/* ================================= Helpers ================================ */
+	private boolean sharesDimension(MyVector vector) {
+		return size == vector.getSize();
+	}
+
 	/* ============================== Constructors ============================== */
 	public MyVector(double[] contents) {
-		this.contents = contents;
+		this.contents = contents.clone();
 		this.size = contents.length;
 	}
 
@@ -27,12 +35,9 @@ public class MyVector {
 	}
 
 	/* ================================= Methods ================================ */
-	public void transpose() {
+	public MyVector transpose() {
 		isTransposed = !isTransposed;
-	}
-
-	private boolean sharesDimension(MyVector vector) {
-		return size == vector.getSize();
+		return this;
 	}
 
 	public void scale(double c) {
@@ -41,10 +46,22 @@ public class MyVector {
 		}
 	}
 
+	public MyVector scaled(double c) {
+		MyVector newVector = new MyVector(contents);
+		newVector.scale(c);
+		return newVector;
+	}
+
+	public void normalize() {
+		double length = getLength();
+		if (length == 0)
+			throw new ArithmeticException("Cannot normalize zero vector");
+		scale(1 / length);
+	}
+
 	public void add(MyVector vector) {
 		if (!(sharesDimension(vector)))
 			throw new IllegalArgumentException("Cannot add vectors with different sizes");
-
 		for (int i = 0; i < size; i++) {
 			contents[i] += vector.getContents()[i];
 		}
@@ -64,12 +81,20 @@ public class MyVector {
 		return isTransposed;
 	}
 
-	public double[] getContents() {
-		return contents.clone();
+	public double get(int index) {
+		return contents[index];
 	}
 
 	public int getSize() {
 		return size;
+	}
+
+	public double getLength() {
+		return Math.sqrt(Arrays.stream(contents).map(a -> a * a).sum());
+	}
+
+	public double[] getContents() {
+		return contents.clone();
 	}
 
 	/* ================================== Other ================================= */
@@ -81,17 +106,38 @@ public class MyVector {
 		return s;
 	}
 
-	public static void main(String[] args) {
-		System.out.print("\033[2J\033[1;1H");
-		int size = 6;
-		double[] array = new double[size];
+	/*
+	 * I have declared MyVector iterable for convenience in debugging
+	 */
+	@Override
+	public Iterator<Double> iterator() {
+		return Arrays.stream(contents).boxed().toList().iterator();
+	}
 
-		for (int i = 1; i < size; i++)
-			array[i] = i;
+	/*
+	 * compareTo method to be able to sort List<MyVector> for row reducion
+	 * Use is only intended for vectors of same size
+	 */
+	@Override
+	public int compareTo(MyVector otherVector) {
+		if (this.size > otherVector.getSize())
+			return 1;
+		if (this.size < otherVector.getSize())
+			return -1;
 
-		MyVector vector = new MyVector(array);
-		System.out.println(vector);
+		List<Boolean> thisNonZeroPlacements = Arrays.stream(contents).mapToObj((e) -> e != 0)
+				.collect(Collectors.toList());
 
+		List<Boolean> otherNonZeroPlacements = Arrays.stream(otherVector.getContents()).mapToObj((e) -> e != 0)
+				.collect(Collectors.toList());
+
+		// At this point we can assume the vectors are of the same size
+		for (int i = 0; i < thisNonZeroPlacements.size(); i++) {
+			if (thisNonZeroPlacements.get(i) && otherNonZeroPlacements.get(i))
+				continue;
+			return thisNonZeroPlacements.get(i) ? -1 : 1;
+		}
+		return 0;
 	}
 
 }
