@@ -9,6 +9,8 @@ import representations.Matrix;
 import representations.MyVector;
 import representations.OriginalMatrix;
 
+/* ==================== AI GENERATED CLASS FOR DEBUGGING ==================== */
+
 /**
  * MatrixBank provides predefined matrices with various properties for testing
  * and debugging.

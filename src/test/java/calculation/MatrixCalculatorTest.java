@@ -82,4 +82,49 @@ public class MatrixCalculatorTest {
 
 		calculator.multiply(a, b); // Should throw exception
 	}
+
+	@Test
+	public void testDeterminant2x2() {
+		Matrix m = new OriginalMatrix(new double[][] {
+				{ 1, 2 },
+				{ 3, 4 }
+		});
+		double det = calculator.determinant(m);
+		assertEquals(-2.0, det, 0.0001);
+	}
+
+	@Test
+	public void testDeterminant3x3() {
+		Matrix m = new OriginalMatrix(new double[][] {
+				{ 1, 2, 3 },
+				{ 4, 5, 6 },
+				{ 7, 8, 0 }
+		});
+		double det = calculator.determinant(m);
+		assertEquals(27.0, det, 0.0001);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testDeterminantNonSquare() {
+		Matrix m = new OriginalMatrix(2, 3);
+		calculator.determinant(m);
+	}
+
+	@Test
+	public void testGetSubmatrix() {
+		Matrix original = new OriginalMatrix(new double[][] {
+				{ 1, 2, 3 },
+				{ 4, 5, 6 },
+				{ 7, 8, 9 }
+		});
+
+		Matrix sub = calculator.getSubmatrix(0, 0, original);
+		assertEquals(2, sub.rows());
+		assertEquals(2, sub.columns());
+		assertEquals(5, sub.get(0, 0), 0.0001);
+		assertEquals(6, sub.get(0, 1), 0.0001);
+		assertEquals(8, sub.get(1, 0), 0.0001);
+		assertEquals(9, sub.get(1, 1), 0.0001);
+	}
+
 }

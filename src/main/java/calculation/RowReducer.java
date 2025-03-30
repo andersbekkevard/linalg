@@ -32,6 +32,9 @@ public class RowReducer {
 
 	/* ============================= Primary methods ============================ */
 	public ReductionResult reduce(Matrix matrix) {
+		if (Matrix.isIdentityMatrix(matrix))
+			return new ReductionResult(matrix, new ArrayList<>());
+
 		List<ElementaryMatrix> operationsPerformed = new ArrayList<>();
 
 		List<MyVector> rowVectors = matrix.getRowVectors();
