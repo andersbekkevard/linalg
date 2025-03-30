@@ -1,6 +1,12 @@
 package utils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import representations.Matrix;
+import representations.MyVector;
 import representations.OriginalMatrix;
 
 /**
@@ -20,6 +26,18 @@ public class MatrixBank {
 			contents[i][i] = 1.0;
 		}
 		return new OriginalMatrix(contents);
+	}
+
+	/**
+	 * Returns an list of row vectors that represent an identity matrix of the
+	 * specified size.
+	 */
+	public static List<MyVector> identityVectors(int size) {
+		double[][] contents = new double[size][size];
+		for (int i = 0; i < size; i++) {
+			contents[i][i] = 1.0;
+		}
+		return Arrays.stream(contents).map(MyVector::new).collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	/**

@@ -4,16 +4,17 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 
 public class MyVector implements Iterable<Double>, Comparable<MyVector> {
 
 	/*
 	 * Fundamental object in linear algebra
-	 * Contents are stored in double array
-	 * 
+	 * Contents are stored in double[]
 	 */
 
 	/* ================================= Fields ================================= */
+	// the field isTransposed is not in use at this point in time
 	private boolean isTransposed = false;
 	private final int size;
 	private final double[] contents;
@@ -74,6 +75,10 @@ public class MyVector implements Iterable<Double>, Comparable<MyVector> {
 		for (int i = 0; i < size; i++) {
 			contents[i] -= vector.getContents()[i];
 		}
+	}
+
+	public DoubleStream stream() {
+		return Arrays.stream(contents);
 	}
 
 	/* ================================= Getters ================================ */

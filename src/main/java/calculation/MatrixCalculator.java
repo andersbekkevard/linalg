@@ -34,4 +34,31 @@ public class MatrixCalculator {
 		return result;
 	}
 
+	public double determinant(Matrix m) {
+		if (m.columns() != m.rows())
+			throw new IllegalArgumentException("Can only compute determinants of square matricies");
+		int dimension = m.rows();
+
+		if (dimension == 2)
+			return m.get(0, 0) * m.get(1, 1) - m.get(0, 1) * m.get(1, 0);
+
+		int multiplier = 1;
+		double determinant = 0;
+		for (int i = 0; i < dimension; i++) {
+			determinant += multiplier * m.get(0, i) * determinant(getSubmatrix(0, i, m));
+			multiplier *= -1;
+		}
+		return determinant;
+	}
+
+	/* ================================= Helpers ================================ */
+	public Matrix getSubmatrix(int currentRow, int currentColumn, Matrix matrix) {
+		List<MyVector> rowVectors = matrix.getRowVectors();
+		rowVectors.remove(currentRow);
+		Matrix rectangularIntermediary = new OriginalMatrix(rowVectors);
+		List<MyVector> columnVectors = rectangularIntermediary.getColumnVectors();
+		columnVectors.remove(currentColumn);
+
+		return new OriginalMatrix(columnVectors, true);
+	}
 }

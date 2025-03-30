@@ -1,32 +1,24 @@
 package representations;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
+
+import utils.MatrixBank;
 
 /*
  * Wrapper object for elementary matricies. They have limited functionality
  * as they are only intended for finding inverses (Should only really be multiplied)
- * 
- * This class is quite inefficient as it creates new objects quite often
- * Have not bothered fixing yet
  */
 public class ElementaryMatrix implements Matrix {
 
-	Matrix matrix;
+	List<MyVector> rowVectors;
 	int dimension;
 
 	public ElementaryMatrix(int dimension) {
 		this.dimension = dimension;
-		this.matrix = new OriginalMatrix(dimension, dimension);
-		IntStream.range(0, dimension).forEach(i -> matrix.set(i, i, 1));
-	}
-
-	public ElementaryMatrix(Matrix matrix) {
-		if (matrix.rows() != matrix.columns())
-			throw new IllegalArgumentException("Elementary matricies have to be square");
-
-		this.matrix = matrix;
-		this.dimension = matrix.rows();
+		this.rowVectors = MatrixBank.identityVectors(dimension);
 	}
 
 	/* ============================= Unique methods ============================= */
@@ -37,12 +29,7 @@ public class ElementaryMatrix implements Matrix {
 		if (firstRowIndex < 0 || firstRowIndex >= dimension || secondRowIndex < 0 || secondRowIndex >= dimension)
 			throw new IllegalArgumentException("Rows do not exist");
 
-		List<MyVector> rows = matrix.getRowVectors();
-		MyVector memoryRow = rows.get(firstRowIndex);
-		rows.set(firstRowIndex, rows.get(secondRowIndex));
-		rows.set(secondRowIndex, memoryRow);
-		this.matrix = new OriginalMatrix(rows);
-
+		Collections.swap(rowVectors, firstRowIndex, secondRowIndex);
 		return this;
 	}
 
@@ -50,10 +37,7 @@ public class ElementaryMatrix implements Matrix {
 		if (rowIndex < 0 || rowIndex >= dimension)
 			throw new IllegalArgumentException("Row does not exist");
 
-		List<MyVector> rows = matrix.getRowVectors();
-		rows.get(rowIndex).scale(c);
-		this.matrix = new OriginalMatrix(rows);
-
+		rowVectors.get(rowIndex).scale(c);
 		return this;
 	}
 
@@ -64,53 +48,60 @@ public class ElementaryMatrix implements Matrix {
 		if (subtractorIndex < 0 || subtractorIndex >= dimension || targetIndex < 0 || targetIndex >= dimension)
 			throw new IllegalArgumentException("Rows do not exist");
 
-		List<MyVector> rows = matrix.getRowVectors();
-		rows.get(targetIndex).subtract(rows.get(subtractorIndex));
-		this.matrix = new OriginalMatrix(rows);
+		rowVectors.get(targetIndex).subtract(rowVectors.get(subtractorIndex));
+		return this;
+	}
+
+	public ElementaryMatrix subtractScaledRow(int targetIndex, int subtractorIndex, double scalar) {
+		rowVectors.get(targetIndex).subtract(rowVectors.get(subtractorIndex).scaled(scalar));
 		return this;
 	}
 
 	/* ============================ Standard methods ============================ */
 
 	@Override
-	public void set(int row, int column, double value) {
-		matrix.set(row, column, value);
-	}
-
-	@Override
 	public void scale(double c) {
-		matrix.scale(c);
+		for (MyVector vector : rowVectors)
+			vector.scale(c);
 	}
 
 	@Override
 	public int rows() {
-		return matrix.rows();
+		return rowVectors.size();
 	}
 
 	@Override
 	public int columns() {
-		return matrix.columns();
+		return rowVectors.get(0).getSize();
 	}
 
 	@Override
 	public List<MyVector> getRowVectors() {
-		return matrix.getRowVectors();
+		return List.copyOf(rowVectors);
 	}
 
 	@Override
 	public List<MyVector> getColumnVectors() {
-		return matrix.getColumnVectors();
+		return new ArrayList<>(IntStream.range(0, dimension)
+				.mapToObj(i -> new MyVector(rowVectors.stream().mapToDouble(row -> row.get(i)).toArray()))
+				.toList());
 	}
 
 	@Override
 	public String toString() {
-		return matrix.toString();
+		return new OriginalMatrix(rowVectors).toString();
 	}
 
 	/* ========================== Not supported methods ========================= */
 	@Override
 	public double get(int row, int column) {
 		throw new UnsupportedOperationException("Can't get elements from elementary matricies");
+	}
+
+	@Override
+	public void set(int row, int column, double value) {
+		throw new UnsupportedOperationException("Can't set elements in elementary matricies");
+
 	}
 
 	@Override
