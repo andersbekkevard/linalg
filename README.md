@@ -1,6 +1,6 @@
 # Java Linear Algebra Library
 
-A Java-based linear algebra library built using object-oriented principles, created to support core linear algebra operations for educational and practical purposes.
+Linear algebra library built using object-oriented principles. Created for educational and practical purposes.
 
 ## Features
 
