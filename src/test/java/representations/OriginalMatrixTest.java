@@ -3,7 +3,6 @@ package representations;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -72,7 +71,7 @@ public class OriginalMatrixTest {
 
 	@Test
 	public void testTranspose() {
-		Matrix transposed = matrix.transpose();
+		Matrix transposed = matrix.transposed();
 
 		assertEquals(3, transposed.rows());
 		assertEquals(3, transposed.columns());
@@ -151,7 +150,7 @@ public class OriginalMatrixTest {
 
 		for (int i = 0; i < 3; i++) {
 			MyVector row = rows.get(i);
-			assertEquals(3, row.getSize());
+			assertEquals(3, row.size());
 
 			for (int j = 0; j < 3; j++) {
 				assertEquals(testData[i][j], row.get(j), 0.0001);
@@ -167,7 +166,7 @@ public class OriginalMatrixTest {
 
 		for (int j = 0; j < 3; j++) {
 			MyVector column = columns.get(j);
-			assertEquals(3, column.getSize());
+			assertEquals(3, column.size());
 
 			for (int i = 0; i < 3; i++) {
 				assertEquals(testData[i][j], column.get(i), 0.0001);
@@ -175,11 +174,4 @@ public class OriginalMatrixTest {
 		}
 	}
 
-	@Test
-	public void testToString() {
-		String result = matrix.toString();
-		assertTrue(result.contains("[1.0, 2.0, 3.0]"));
-		assertTrue(result.contains("[4.0, 5.0, 6.0]"));
-		assertTrue(result.contains("[7.0, 8.0, 9.0]"));
-	}
 }

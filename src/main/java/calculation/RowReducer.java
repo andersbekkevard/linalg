@@ -39,7 +39,7 @@ public class RowReducer {
 
 		List<MyVector> rowVectors = matrix.getRowVectors();
 		int numberOfVectors = rowVectors.size();
-		int lengthOfVectors = rowVectors.get(0).getSize();
+		int lengthOfVectors = rowVectors.get(0).size();
 
 		for (int c = 0; c < lengthOfVectors; c++) {
 			int pivotIndex = -1;
@@ -91,6 +91,9 @@ public class RowReducer {
 		if (matrix.rows() != matrix.columns())
 			throw new IllegalArgumentException("Can only invert square matricies");
 
+		if (Matrix.isIdentityMatrix(matrix))
+			return Optional.ofNullable(MatrixBank.identity(matrix.rows()));
+
 		ReductionResult result = reduce(matrix);
 		Matrix inverse = aggregateOperations(result.operations());
 		return Matrix.isIdentityMatrix(result.reducedMatrix()) ? Optional.ofNullable(inverse) : Optional.empty();
@@ -98,9 +101,20 @@ public class RowReducer {
 	}
 
 	/* ============================= Helper methods ============================= */
-	private Matrix aggregateOperations(List<ElementaryMatrix> operations) {
+	public Matrix aggregateOperations(List<ElementaryMatrix> operations) {
 		if (operations.isEmpty())
-			throw new IllegalArgumentException("Cannot aggregate an empty list");
+			throw new IllegalArgumentException("Cannot aggregate an empty list if not provided with dimension");
+
+		Matrix aggregateMatrix = MatrixBank.identity(operations.get(0).rows());
+		for (ElementaryMatrix e : operations) {
+			aggregateMatrix = calc.multiply(e, aggregateMatrix);
+		}
+		return aggregateMatrix;
+	}
+
+	public Matrix aggregateOperations(List<ElementaryMatrix> operations, int dimensions) {
+		if (operations.isEmpty())
+			return MatrixBank.identity(dimensions);
 
 		Matrix aggregateMatrix = MatrixBank.identity(operations.get(0).rows());
 		for (ElementaryMatrix e : operations) {

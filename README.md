@@ -15,6 +15,8 @@ A Java-based linear algebra library built using object-oriented principles, crea
   - Converts matrices to row echelon form using a sequence of elementary row operations.
 - **Inverse Calculation**:
   - Computes inverse of square matrices using row reduction and elementary matrices.
+- **Vector Spaces**
+  - Represents the mathematical object vector spaces, and allow for tests like whether a vector is contained
 - **Matrix Generator**:
   - A utility class (`MatrixBank`) for generating identity, diagonal, invertible, singular, rectangular, sparse, and test matrices.
 

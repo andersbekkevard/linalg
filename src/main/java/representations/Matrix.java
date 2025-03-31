@@ -24,7 +24,9 @@ public interface Matrix {
 		return true;
 	}
 
-	public Matrix transpose();
+	public MyVector multiply(MyVector vector);
+
+	public Matrix transposed();
 
 	public void set(int row, int column, double value);
 

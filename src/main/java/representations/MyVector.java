@@ -1,27 +1,45 @@
 package representations;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
 
+/**
+ * Fundamental object in linear algebra
+ * Contents are stored in double[]
+ */
 public class MyVector implements Iterable<Double>, Comparable<MyVector> {
 
-	/*
-	 * Fundamental object in linear algebra
-	 * Contents are stored in double[]
-	 */
-
 	/* ================================= Fields ================================= */
-	// the field isTransposed is not in use at this point in time
-	private boolean isTransposed = false;
 	private final int size;
 	private final double[] contents;
 
 	/* ================================= Helpers ================================ */
 	private boolean sharesDimension(MyVector vector) {
-		return size == vector.getSize();
+		return size == vector.size();
+	}
+
+	/*
+	 * Params:
+	 * int vectorSpace: The mathematical dimension (R1, R2 etc)
+	 * int dimension: The java index of the "1" element (0, 1 etc)
+	 * 
+	 * This may be a bit illogical, but doing it like this for now
+	 */
+	public static MyVector unitVector(int vectorSpace, int dimension) {
+		if (vectorSpace <= 0)
+			throw new IllegalArgumentException("Can not have vector space with negative or zero dimension");
+		// if (dimension < 0 || dimension >= vectorSpace)
+		// throw new IllegalArgumentException("Dimension is not contained in the
+		// vectorspace");
+
+		return new MyVector(
+				IntStream.range(0, vectorSpace).mapToDouble(i -> i == dimension ? 1.0 : 0.0).toArray());
 	}
 
 	/* ============================== Constructors ============================== */
@@ -36,10 +54,6 @@ public class MyVector implements Iterable<Double>, Comparable<MyVector> {
 	}
 
 	/* ================================= Methods ================================ */
-	public MyVector transpose() {
-		isTransposed = !isTransposed;
-		return this;
-	}
 
 	public void scale(double c) {
 		for (int i = 0; i < size; i++) {
@@ -54,7 +68,7 @@ public class MyVector implements Iterable<Double>, Comparable<MyVector> {
 	}
 
 	public void normalize() {
-		double length = getLength();
+		double length = length();
 		if (length == 0)
 			throw new ArithmeticException("Cannot normalize zero vector");
 		scale(1 / length);
@@ -64,7 +78,7 @@ public class MyVector implements Iterable<Double>, Comparable<MyVector> {
 		if (!(sharesDimension(vector)))
 			throw new IllegalArgumentException("Cannot add vectors with different sizes");
 		for (int i = 0; i < size; i++) {
-			contents[i] += vector.getContents()[i];
+			contents[i] += vector.contents()[i];
 		}
 	}
 
@@ -73,7 +87,7 @@ public class MyVector implements Iterable<Double>, Comparable<MyVector> {
 			throw new IllegalArgumentException("Cannot subtract vectors with different sizes");
 
 		for (int i = 0; i < size; i++) {
-			contents[i] -= vector.getContents()[i];
+			contents[i] -= vector.contents()[i];
 		}
 	}
 
@@ -82,33 +96,62 @@ public class MyVector implements Iterable<Double>, Comparable<MyVector> {
 	}
 
 	/* ================================= Getters ================================ */
-	public boolean isTransposed() {
-		return isTransposed;
-	}
 
 	public double get(int index) {
 		return contents[index];
 	}
 
-	public int getSize() {
+	public int size() {
 		return size;
 	}
 
-	public double getLength() {
+	public double length() {
 		return Math.sqrt(Arrays.stream(contents).map(a -> a * a).sum());
 	}
 
-	public double[] getContents() {
+	public double[] contents() {
 		return contents.clone();
 	}
 
 	/* ================================== Other ================================= */
 	@Override
 	public String toString() {
-		String s = Arrays.toString(contents);
-		if (isTransposed)
-			s = s + "T";
-		return s;
+		StringBuilder sb = new StringBuilder();
+		int size = size();
+
+		// Determine maximum width needed
+		int maxWidth = 0;
+		String[] formattedValues = new String[size];
+
+		// Format all values with one decimal place
+		DecimalFormat df = new DecimalFormat("0.0");
+		df.setRoundingMode(RoundingMode.HALF_UP);
+
+		// First pass: format all values and find maximum width
+		for (int i = 0; i < size; i++) {
+			formattedValues[i] = df.format(get(i));
+			maxWidth = Math.max(maxWidth, formattedValues[i].length());
+		}
+
+		// Build the string with proper alignment
+		sb.append("[ ");
+		for (int i = 0; i < size; i++) {
+			if (i > 0) {
+				sb.append("[ ");
+			}
+
+			// Right-align each value
+			String padding = " ".repeat(maxWidth - formattedValues[i].length());
+			sb.append(padding).append(formattedValues[i]);
+
+			// End of element
+			if (i < size - 1) {
+				sb.append(" ]\n");
+			}
+		}
+		sb.append(" ]\n");
+
+		return sb.toString();
 	}
 
 	/*
@@ -125,15 +168,15 @@ public class MyVector implements Iterable<Double>, Comparable<MyVector> {
 	 */
 	@Override
 	public int compareTo(MyVector otherVector) {
-		if (this.size > otherVector.getSize())
+		if (this.size > otherVector.size())
 			return 1;
-		if (this.size < otherVector.getSize())
+		if (this.size < otherVector.size())
 			return -1;
 
 		List<Boolean> thisNonZeroPlacements = Arrays.stream(contents).mapToObj((e) -> e != 0)
 				.collect(Collectors.toList());
 
-		List<Boolean> otherNonZeroPlacements = Arrays.stream(otherVector.getContents()).mapToObj((e) -> e != 0)
+		List<Boolean> otherNonZeroPlacements = Arrays.stream(otherVector.contents()).mapToObj((e) -> e != 0)
 				.collect(Collectors.toList());
 
 		// At this point we can assume the vectors are of the same size

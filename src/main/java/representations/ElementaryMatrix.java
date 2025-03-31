@@ -8,7 +8,7 @@ import java.util.stream.IntStream;
 import utils.MatrixBank;
 
 /*
- * Wrapper object for elementary matricies. They have limited functionality
+ * Object to represent elementary matricies. They have limited functionality
  * as they are only intended for finding inverses (Should only really be multiplied)
  */
 public class ElementaryMatrix implements Matrix {
@@ -72,7 +72,7 @@ public class ElementaryMatrix implements Matrix {
 
 	@Override
 	public int columns() {
-		return rowVectors.get(0).getSize();
+		return rowVectors.get(0).size();
 	}
 
 	@Override
@@ -117,8 +117,14 @@ public class ElementaryMatrix implements Matrix {
 	}
 
 	@Override
-	public Matrix transpose() {
+	public Matrix transposed() {
 		throw new UnsupportedOperationException("Elementary matricies can't transpose");
+	}
+
+	@Override
+	public MyVector multiply(MyVector vector) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'multiply'");
 	}
 
 }

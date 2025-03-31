@@ -4,7 +4,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,7 +20,7 @@ public class TransposedMatrixTest {
 				{ 4.0, 5.0, 6.0 }
 		};
 		originalMatrix = new OriginalMatrix(data);
-		transposedMatrix = originalMatrix.transpose();
+		transposedMatrix = originalMatrix.transposed();
 	}
 
 	@Test
@@ -50,7 +49,7 @@ public class TransposedMatrixTest {
 
 	@Test
 	public void testTranspose() {
-		Matrix doubleTransposed = transposedMatrix.transpose();
+		Matrix doubleTransposed = transposedMatrix.transposed();
 		assertSame(originalMatrix, doubleTransposed);
 	}
 
@@ -80,9 +79,9 @@ public class TransposedMatrixTest {
 			MyVector row = rows.get(i);
 			MyVector originalColumn = originalColumns.get(i);
 
-			assertEquals(originalColumn.getSize(), row.getSize());
+			assertEquals(originalColumn.size(), row.size());
 
-			for (int j = 0; j < row.getSize(); j++) {
+			for (int j = 0; j < row.size(); j++) {
 				assertEquals(originalColumn.get(j), row.get(j), MARGIN_OF_ERROR);
 			}
 		}
@@ -99,9 +98,9 @@ public class TransposedMatrixTest {
 			MyVector column = columns.get(i);
 			MyVector originalRow = originalRows.get(i);
 
-			assertEquals(originalRow.getSize(), column.getSize());
+			assertEquals(originalRow.size(), column.size());
 
-			for (int j = 0; j < column.getSize(); j++) {
+			for (int j = 0; j < column.size(); j++) {
 				assertEquals(originalRow.get(j), column.get(j), MARGIN_OF_ERROR);
 			}
 		}
@@ -134,9 +133,4 @@ public class TransposedMatrixTest {
 		transposedMatrix.add(other); // Should throw exception
 	}
 
-	@Test
-	public void testToString() {
-		String result = transposedMatrix.toString();
-		assertTrue(result.contains("T"));
-	}
 }

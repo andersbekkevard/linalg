@@ -23,8 +23,8 @@ public class MatrixCalculator {
 				MyVector column = bColumns.get(columnIndex);
 				double value = 0;
 
-				assert row.getSize() == column.getSize() : "Rows and columns were of different length";
-				for (int elementIndex = 0; elementIndex < row.getSize(); elementIndex++) {
+				assert row.size() == column.size() : "Rows and columns were of different length";
+				for (int elementIndex = 0; elementIndex < row.size(); elementIndex++) {
 					value += row.get(elementIndex) * column.get(elementIndex);
 				}
 

@@ -2,6 +2,10 @@ package representations;
 
 import java.util.List;
 
+/**
+ * This class provides a transposed view of an underlying matrix
+ * This is not a deep copy, so there are side effects to modifying either object
+ */
 public class TransposedMatrix implements Matrix {
 
 	Matrix originalMatrix;
@@ -12,10 +16,6 @@ public class TransposedMatrix implements Matrix {
 	}
 
 	/* ================================= Methods ================================ */
-	@Override
-	public Matrix transpose() {
-		return originalMatrix;
-	}
 
 	@Override
 	public void scale(double c) {
@@ -34,6 +34,11 @@ public class TransposedMatrix implements Matrix {
 	public void subtract(Matrix m) {
 		if (!(originalMatrix.rows() == m.columns() && originalMatrix.columns() == m.rows()))
 			throw new IllegalArgumentException("Can not subtractmatricies of different dimensions");
+	}
+
+	@Override
+	public Matrix transposed() {
+		return originalMatrix;
 	}
 
 	/* ================================= Getters ================================ */
@@ -71,7 +76,13 @@ public class TransposedMatrix implements Matrix {
 
 	@Override
 	public String toString() {
-		return originalMatrix.toString() + "T";
+		return new OriginalMatrix(originalMatrix.getColumnVectors()).toString();
+	}
+
+	@Override
+	public MyVector multiply(MyVector vector) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'multiply'");
 	}
 
 }

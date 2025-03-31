@@ -1,10 +1,10 @@
 package representations;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class OriginalMatrix implements Matrix {
@@ -21,23 +21,6 @@ public class OriginalMatrix implements Matrix {
 	private final double[][] contents;
 
 	/* ================================= Helpers ================================ */
-
-	/*
-	 * Adjuster for floating point arithmetic so we avoid -0.0 in the toStrig()
-	 */
-	private static final Function<Double, Double> floatingPointAdjuster = (d) -> {
-		if (Math.abs(d) < 1e-10)
-			return 0.0;
-		return d;
-	};
-
-	// Swap .0f to .1f to show decimal
-	private static final Function<Double, String> doubleToRoundedString = (d) -> String.format("%.1f", d);
-
-	private static final Function<double[], String> arrayToString = (row) -> "["
-			+ Arrays.stream(row).boxed().map(floatingPointAdjuster)
-					.map(doubleToRoundedString).collect(Collectors.joining(", "))
-			+ "]";
 
 	private boolean rowIndexIsValid(int rowIndex) {
 		return 0 <= rowIndex && rowIndex < rows;
@@ -77,21 +60,20 @@ public class OriginalMatrix implements Matrix {
 	}
 
 	public OriginalMatrix(List<MyVector> vectors, boolean considerVectorsAsColumns) {
-		int vectorSize = vectors.get(0).getSize();
+		int vectorSize = vectors.get(0).size();
 		for (MyVector vector : vectors) {
-			if (vector.getSize() != vectorSize)
+			if (vector.size() != vectorSize)
 				throw new IllegalArgumentException("All vectors must be of same length");
 		}
 
 		if (!considerVectorsAsColumns) {
-			double[][] contents = vectors.stream().map(MyVector::getContents).toArray(double[][]::new);
+			double[][] contents = vectors.stream().map(MyVector::contents).toArray(double[][]::new);
 
 			this.contents = contents;
 			this.rows = contents.length;
 			this.columns = contents[0].length;
 		} else {
-			int numberOfColumns = vectors.size();
-			double[][] contents = IntStream.range(0, numberOfColumns)
+			double[][] contents = IntStream.range(0, vectorSize)
 					.mapToObj(i -> vectors.stream().mapToDouble(vector -> vector.get(i)).toArray())
 					.toArray(double[][]::new);
 
@@ -110,7 +92,22 @@ public class OriginalMatrix implements Matrix {
 		contents[row][column] = value;
 	}
 
-	public Matrix transpose() {
+	@Override
+	public MyVector multiply(MyVector vector) {
+		if (vector.size() != this.contents[0].length)
+			throw new IllegalArgumentException("Vector has wrong dimensions");
+
+		MyVector resultVector = new MyVector(this.contents.length);
+		List<MyVector> columns = getColumnVectors();
+
+		for (int i = 0; i < columns.size(); i++) {
+			resultVector.add(columns.get(i).scaled(vector.get(i)));
+		}
+		return resultVector;
+
+	}
+
+	public Matrix transposed() {
 		return new TransposedMatrix(this);
 	}
 
@@ -197,8 +194,60 @@ public class OriginalMatrix implements Matrix {
 	}
 
 	/* ================================== Other ================================= */
+	// @Override
+	// public String toString() {
+	// return "[\n" +
+	// Arrays.stream(contents).map(arrayToString).collect(Collectors.joining("\n"))
+	// + "\n]";
+	// }
+
 	@Override
 	public String toString() {
-		return "[\n" + Arrays.stream(contents).map(arrayToString).collect(Collectors.joining("\n")) + "\n]";
+		StringBuilder sb = new StringBuilder();
+		int rows = rows();
+		int cols = columns();
+
+		// Determine maximum width needed for each column
+		int[] colWidths = new int[cols];
+		String[][] formattedValues = new String[rows][cols];
+
+		// Format all values with one decimal place
+		DecimalFormat df = new DecimalFormat("0.0");
+		df.setRoundingMode(RoundingMode.HALF_UP);
+
+		// First pass: format all values and find maximum width per column
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				formattedValues[i][j] = df.format(get(i, j));
+				colWidths[j] = Math.max(colWidths[j], formattedValues[i][j].length());
+			}
+		}
+
+		// Build the string with proper alignment
+		sb.append("[ ");
+		for (int i = 0; i < rows; i++) {
+			if (i > 0) {
+				sb.append("[ ");
+			}
+
+			for (int j = 0; j < cols; j++) {
+				// Right-align each value within its column width
+				String padding = " ".repeat(colWidths[j] - formattedValues[i][j].length());
+				sb.append(padding).append(formattedValues[i][j]);
+
+				// Add spacing between columns
+				if (j < cols - 1) {
+					sb.append("  ");
+				}
+			}
+
+			// End of row
+			if (i < rows - 1) {
+				sb.append(" ]\n");
+			}
+		}
+		sb.append(" ]\n");
+
+		return sb.toString();
 	}
 }
