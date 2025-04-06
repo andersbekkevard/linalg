@@ -1,20 +1,23 @@
 package calculation;
 
-import java.util.List;
-import java.util.Optional;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
 
+import functionality.RowReducer;
 import representations.ElementaryMatrix;
 import representations.Matrix;
 import representations.OriginalMatrix;
 import utils.MatrixBank;
+import utils.Utils;
 import utils.records.ReductionResult;
 
 public class RowReducerTest {
@@ -83,7 +86,7 @@ public class RowReducerTest {
 		int pivots = 0;
 		for (int i = 0; i < reduced.rows(); i++) {
 			for (int j = 0; j < reduced.columns(); j++) {
-				if (Math.abs(reduced.get(i, j) - 1.0) < 1e-10) {
+				if (Utils.isOne(reduced.get(i, j))) {
 					pivots++;
 					break;
 				}
@@ -107,7 +110,7 @@ public class RowReducerTest {
 		int pivots = 0;
 		for (int i = 0; i < reduced.rows(); i++) {
 			for (int j = 0; j < reduced.columns(); j++) {
-				if (Math.abs(reduced.get(i, j) - 1.0) < 1e-10) {
+				if (Utils.isOne(reduced.get(i, j))) {
 					pivots++;
 					break;
 				}
@@ -217,7 +220,7 @@ public class RowReducerTest {
 		int leadingOnes = 0;
 		for (int i = 0; i < reduced.rows(); i++) {
 			for (int j = 0; j < reduced.columns(); j++) {
-				if (Math.abs(reduced.get(i, j) - 1.0) < 1e-10) {
+				if (Utils.isOne(reduced.get(i, j))) {
 					leadingOnes++;
 					break;
 				}
@@ -323,9 +326,9 @@ public class RowReducerTest {
 			for (int i = 0; i < matrix.rows(); i++) {
 				for (int j = 0; j < matrix.columns(); j++) {
 					if (i == j) {
-						assertTrue(Math.abs(product.get(i, j) - 1.0) < 1e-5);
+						assertTrue(Utils.isOne(product.get(i, j)));
 					} else {
-						assertTrue(Math.abs(product.get(i, j)) < 1e-5);
+						assertTrue(Utils.isZero(product.get(i, j)));
 					}
 				}
 			}

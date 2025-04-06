@@ -1,10 +1,14 @@
-package representations;
+package functionality;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import calculation.RowReducer;
+import representations.Matrix;
+import representations.MyVector;
+import representations.OriginalMatrix;
+import utils.Utils;
 import utils.records.ReductionResult;
 
 public class VectorSpace {
@@ -26,6 +30,14 @@ public class VectorSpace {
 
 	public VectorSpace(MyVector... vectors) {
 		ArrayList<MyVector> potentialBasis = new ArrayList<>(Arrays.asList(vectors));
+		int dimension = potentialBasis.get(0).size();
+		if (potentialBasis.stream().anyMatch(v -> v.size() != dimension))
+			throw new IllegalArgumentException("All vectors must be of same dimension");
+		this.basis = potentialBasis;
+		this.dimensionOfVectors = dimension;
+	}
+
+	public VectorSpace(List<MyVector> potentialBasis) {
 		int dimension = potentialBasis.get(0).size();
 		if (potentialBasis.stream().anyMatch(v -> v.size() != dimension))
 			throw new IllegalArgumentException("All vectors must be of same dimension");
@@ -85,11 +97,19 @@ public class VectorSpace {
 		 * abide by positivity
 		 */
 		for (int i = 0; i < rightHandVector.size(); i++) {
-			if (Math.abs(rightHandVector.get(i)) > 1e-10 && Math.abs(resultRows.get(i).length()) < 1e-10) {
+			if (!Utils.isZero(rightHandVector.get(i)) && Utils.isZero(resultRows.get(i).length())) {
 				return false;
 			}
 		}
 		return true;
+	}
 
+	/* ================================= Getters ================================ */
+	public List<MyVector> getBasisVectors() {
+		return basis.stream().collect(Collectors.toCollection(ArrayList::new));
+	}
+
+	public int getDimensionOfVectors() {
+		return dimensionOfVectors;
 	}
 }

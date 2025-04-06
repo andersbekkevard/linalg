@@ -1,10 +1,9 @@
-package calculation;
+package functionality;
 
 import java.util.Optional;
 
 import representations.Matrix;
 import representations.MyVector;
-import representations.VectorSpace;
 import utils.records.ReductionResult;
 
 public class LinearSystemsSolver {

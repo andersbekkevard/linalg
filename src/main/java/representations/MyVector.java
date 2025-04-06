@@ -31,15 +31,18 @@ public class MyVector implements Iterable<Double>, Comparable<MyVector> {
 	 * 
 	 * This may be a bit illogical, but doing it like this for now
 	 */
-	public static MyVector unitVector(int vectorSpace, int dimension) {
-		if (vectorSpace <= 0)
+	public static MyVector unitVector(int vectorSpaceDimension, int index) {
+		if (vectorSpaceDimension <= 0)
 			throw new IllegalArgumentException("Can not have vector space with negative or zero dimension");
-		// if (dimension < 0 || dimension >= vectorSpace)
-		// throw new IllegalArgumentException("Dimension is not contained in the
-		// vectorspace");
+		if (index < 0 || index >= vectorSpaceDimension)
+			throw new IllegalArgumentException("Dimension is not contained in thevectorspace");
 
 		return new MyVector(
-				IntStream.range(0, vectorSpace).mapToDouble(i -> i == dimension ? 1.0 : 0.0).toArray());
+				IntStream.range(0, vectorSpaceDimension).mapToDouble(i -> i == index ? 1.0 : 0.0).toArray());
+	}
+
+	public static MyVector zeroVector(int vectorSpaceDImension) {
+		return new MyVector(vectorSpaceDImension);
 	}
 
 	/* ============================== Constructors ============================== */
@@ -95,6 +98,10 @@ public class MyVector implements Iterable<Double>, Comparable<MyVector> {
 		return Arrays.stream(contents);
 	}
 
+	public MyVector clone() {
+		return new MyVector(this.contents.clone());
+	}
+
 	/* ================================= Getters ================================ */
 
 	public double get(int index) {
@@ -116,7 +123,7 @@ public class MyVector implements Iterable<Double>, Comparable<MyVector> {
 	/* ================================== Other ================================= */
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		StringBuilder sb = new StringBuilder("\n");
 		int size = size();
 
 		// Determine maximum width needed

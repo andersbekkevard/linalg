@@ -2,6 +2,9 @@ package representations;
 
 import java.util.List;
 
+import functionality.VectorSpace;
+import utils.Utils;
+
 public interface Matrix {
 
 	/* ============================== Util methods ============================== */
@@ -12,11 +15,11 @@ public interface Matrix {
 		for (int i = 0; i < m.rows(); i++) {
 			for (int j = 0; j < m.columns(); j++) {
 
-				if (i == j && Math.abs(m.get(i, j) - 1) > 1e-5)
+				if (i == j && !Utils.isOne(m.get(i, j)))
 					// This element should be 1. We allow for some floating point error
 					return false;
 
-				if (i != j && Math.abs(m.get(i, j)) > 1e-5)
+				if (i != j && !Utils.isZero(m.get(i, j)))
 					// This element should be 0. We allow for some floating point error
 					return false;
 			}
@@ -46,4 +49,13 @@ public interface Matrix {
 
 	public List<MyVector> getColumnVectors();
 
+	public VectorSpace col();
+
+	public VectorSpace row();
+
+	public VectorSpace ker();
+
+	public VectorSpace coker();
+
+	// public VectorSpace eigen();
 }

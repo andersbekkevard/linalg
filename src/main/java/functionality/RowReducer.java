@@ -1,18 +1,20 @@
-package calculation;
+package functionality;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import calculation.MatrixCalculator;
 import representations.ElementaryMatrix;
 import representations.Matrix;
 import representations.MyVector;
 import representations.OriginalMatrix;
 import utils.MatrixBank;
+import utils.Utils;
 import utils.records.ReductionResult;
 
 public class RowReducer {
-	private final MatrixCalculator calc = new MatrixCalculator();
+	private final MatrixCalculator matrixCalculator = new MatrixCalculator();
 
 	/*
 	 * Algorithm:
@@ -47,7 +49,7 @@ public class RowReducer {
 			// We should have c pivots already established and moved up
 			for (int r = c; r < numberOfVectors; r++) {
 				// Checking if non zero (have to allow for a floating point rounding error)
-				if (Math.abs(rowVectors.get(r).get(c)) > 1e-10) {
+				if (!Utils.isZero(rowVectors.get(r).get(c))) {
 					pivotIndex = r;
 				}
 			}
@@ -77,7 +79,7 @@ public class RowReducer {
 					continue;
 
 				double scalar = rowVectors.get(i).get(c);
-				if (Math.abs(scalar) < 1e-10)
+				if (Utils.isZero(scalar))
 					continue;
 
 				rowVectors.get(i).subtract(pivotVector.scaled(scalar));
@@ -107,7 +109,7 @@ public class RowReducer {
 
 		Matrix aggregateMatrix = MatrixBank.identity(operations.get(0).rows());
 		for (ElementaryMatrix e : operations) {
-			aggregateMatrix = calc.multiply(e, aggregateMatrix);
+			aggregateMatrix = matrixCalculator.multiply(e, aggregateMatrix);
 		}
 		return aggregateMatrix;
 	}
@@ -118,7 +120,7 @@ public class RowReducer {
 
 		Matrix aggregateMatrix = MatrixBank.identity(operations.get(0).rows());
 		for (ElementaryMatrix e : operations) {
-			aggregateMatrix = calc.multiply(e, aggregateMatrix);
+			aggregateMatrix = matrixCalculator.multiply(e, aggregateMatrix);
 		}
 		return aggregateMatrix;
 	}

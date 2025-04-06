@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import functionality.VectorSpace;
 import utils.MatrixBank;
 
 /*
@@ -113,7 +114,6 @@ public class ElementaryMatrix implements Matrix {
 	@Override
 	public void subtract(Matrix m) {
 		throw new UnsupportedOperationException("Elementary matricies can't subtract");
-
 	}
 
 	@Override
@@ -123,8 +123,27 @@ public class ElementaryMatrix implements Matrix {
 
 	@Override
 	public MyVector multiply(MyVector vector) {
-		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Unimplemented method 'multiply'");
+	}
+
+	@Override
+	public VectorSpace col() {
+		throw new UnsupportedOperationException("Cant get subspaces of elementary matricies");
+	}
+
+	@Override
+	public VectorSpace row() {
+		throw new UnsupportedOperationException("Cant get subspaces of elementary matricies");
+	}
+
+	@Override
+	public VectorSpace ker() {
+		throw new UnsupportedOperationException("Cant get subspaces of elementary matricies");
+	}
+
+	@Override
+	public VectorSpace coker() {
+		throw new UnsupportedOperationException("Cant get subspaces of elementary matricies");
 	}
 
 }

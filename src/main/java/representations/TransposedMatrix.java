@@ -2,6 +2,8 @@ package representations;
 
 import java.util.List;
 
+import functionality.VectorSpace;
+
 /**
  * This class provides a transposed view of an underlying matrix
  * This is not a deep copy, so there are side effects to modifying either object
@@ -70,6 +72,29 @@ public class TransposedMatrix implements Matrix {
 	@Override
 	public List<MyVector> getColumnVectors() {
 		return originalMatrix.getRowVectors();
+	}
+
+	/* ============================ Subspace getters ============================ */
+	@Override
+	public VectorSpace col() {
+		return originalMatrix.row();
+	}
+
+	@Override
+	public VectorSpace row() {
+		return originalMatrix.col();
+	}
+
+	@Override
+	public VectorSpace ker() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'ker'");
+	}
+
+	@Override
+	public VectorSpace coker() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'coker'");
 	}
 
 	/* ================================== Other ================================= */

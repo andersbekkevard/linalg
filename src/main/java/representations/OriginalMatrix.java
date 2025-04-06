@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import functionality.VectorSpace;
+
 public class OriginalMatrix implements Matrix {
 
 	/*
@@ -193,6 +195,29 @@ public class OriginalMatrix implements Matrix {
 				.toList());
 	}
 
+	/* ============================ Subspace getters ============================ */
+	@Override
+	public VectorSpace col() {
+		return new VectorSpace(getColumnVectors());
+	}
+
+	@Override
+	public VectorSpace row() {
+		return new VectorSpace(getRowVectors());
+	}
+
+	@Override
+	public VectorSpace ker() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'ker'");
+	}
+
+	@Override
+	public VectorSpace coker() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'coker'");
+	}
+
 	/* ================================== Other ================================= */
 	// @Override
 	// public String toString() {
@@ -203,7 +228,7 @@ public class OriginalMatrix implements Matrix {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		StringBuilder sb = new StringBuilder("\n");
 		int rows = rows();
 		int cols = columns();
 
@@ -250,4 +275,5 @@ public class OriginalMatrix implements Matrix {
 
 		return sb.toString();
 	}
+
 }
