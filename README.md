@@ -33,9 +33,9 @@ Linear algebra library built using object-oriented principles. Created for educa
 - **Matrix Generator**:
   - A utility class (`MatrixBank`) for generating identity, diagonal, invertible, singular, rectangular, sparse, and test matrices.
 
-## AI Usage
+## LLM Usage
 
-JUnit tests and MatrixBank class are written by AI.
+JUnit tests and MatrixBank class are written by LLMs.
 
 ## Usage Example
 
